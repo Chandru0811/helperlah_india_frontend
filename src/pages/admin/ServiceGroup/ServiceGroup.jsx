@@ -230,7 +230,8 @@ function ServiceGroup() {
                   },
                 }}
                 muiTableBodyRowProps={({ row }) => ({
-                  onClick: () => navigate(`/servicegroup/view/${row.original.id}`),
+                  onClick: () =>
+                    navigate(`/servicegroup/view/${row.original.id}`),
                   style: { cursor: "pointer" },
                 })}
               />
@@ -241,7 +242,9 @@ function ServiceGroup() {
               open={Boolean(menuAnchor)}
               onClose={handleMenuClose}
             >
-              <MenuItem onClick={() => navigate(`/servicegroup/edit/${selectedId}`)}>
+              <MenuItem
+                onClick={() => navigate(`/servicegroup/edit/${selectedId}`)}
+              >
                 Edit
               </MenuItem>
               <MenuItem>

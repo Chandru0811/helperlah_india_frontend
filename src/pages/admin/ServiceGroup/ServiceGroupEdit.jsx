@@ -48,7 +48,7 @@ function ServiceGroupEdit() {
       .typeError("*Basic Price must be number")
       .required("*Basic Price is required")
       .positive("*Please enter a valid number")
-      .integer("*Basic Price is must be number"),
+      .integer("*Basic Price must be a whole number"),
     image: imageValidation,
     description: Yup.string()
       .required("*Description is a required field")
