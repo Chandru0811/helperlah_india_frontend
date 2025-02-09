@@ -11,6 +11,7 @@ import {
 } from "@mui/material";
 import Delete from "../../../components/common/Delete";
 import api from "../../../config/URL";
+import PropTypes from "prop-types";
 
 function Subscription() {
   const [menuAnchor, setMenuAnchor] = useState(null);
@@ -99,7 +100,7 @@ function Subscription() {
   const fetchData = async () => {
     try {
       setLoading(true);
-      const response = await api.get(`admin/subscriptions`);
+      const response = await api.get(`subscriptions`);
       setData(response.data.data);
     } catch (error) {
       console.error("Error fetching data:", error);
@@ -192,7 +193,7 @@ function Subscription() {
               className="btn btn-button btn-sm me-2"
               style={{ fontWeight: "600px !important" }}
             >
-              &nbsp; Add &nbsp;&nbsp; <i class="bi bi-plus-lg"></i>
+              &nbsp; Add &nbsp;&nbsp; <i className="bi bi-plus-lg"></i>
             </button>
           </Link>
         </div>
@@ -244,7 +245,7 @@ function Subscription() {
               </MenuItem>
               <MenuItem>
                 <Delete
-                  path={`admin/subscription/delete/${selectedId}`}
+                  path={`subscription/delete/${selectedId}`}
                   onDeleteSuccess={fetchData}
                   onOpen={handleMenuClose}
                 />
@@ -256,5 +257,10 @@ function Subscription() {
     </div>
   );
 }
+
+Subscription.propTypes = {
+  row: PropTypes.func.isRequired,
+  cell: PropTypes.func.isRequired,
+};
 
 export default Subscription;

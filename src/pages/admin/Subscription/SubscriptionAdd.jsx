@@ -2,28 +2,20 @@ import { useFormik } from "formik";
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import * as Yup from "yup";
-import { MultiSelect } from "react-multi-select-component";
 import api from "../../../config/URL";
 import { FiAlertTriangle } from "react-icons/fi";
 import toast from "react-hot-toast";
 import fetchAllOfferWithIds from "../../List/OfferList";
-import fetchAllServiceWithIds from "../../List/ServiceList";
+import fetchAllServiceGroupAndServiceWithIds from "../../List/ServiceGroupAndServiceList";
 
 function SubscriptionAdd() {
   const navigate = useNavigate();
   const [loadIndicator, setLoadIndicator] = useState(false);
   const [serviceData, setServiceData] = useState([]);
   const [offers, setOffers] = useState(null);
-  const [selectedServices, setSelectedServices] = useState([]);
-  const serviceOption = serviceData?.map((service) => ({
-    label: service.name,
-    value: service.id,
-  }));
 
   const validationSchema = Yup.object().shape({
-    service_id: Yup.array()
-      .min(1, "*At least one service must be selected")
-      .required("*Service Id is required"),
+    selected_id: Yup.string().required("*Service Id is required"),
     name: Yup.string().required("*Name is required"),
     start_date: Yup.date().required("*Start Date is required"),
     end_date: Yup.date()
@@ -46,7 +38,8 @@ function SubscriptionAdd() {
 
   const formik = useFormik({
     initialValues: {
-      service_id: [],
+      selected_id: "",
+      type: "",
       name: "",
       slug: "",
       description: "",
@@ -67,10 +60,21 @@ function SubscriptionAdd() {
       const slug = values.name
         ? values.name.toLowerCase().replace(/\s+/g, "_")
         : "";
+
+      const selectedService = serviceData.find(
+        (service) => service.uniqueId === values.selected_id
+      );
+      const type = selectedService ? selectedService.type : "";
+
+      const actualId = Number(values.selected_id.split("-")[0]);
+
+      const formattedSelectedId = type === "service" ? [actualId] : actualId;
+
       const payload = {
         ...values,
+        selected_id: formattedSelectedId,
         slug,
-        service_id: values.service_id.map(Number),
+        type,
         additional_specs: {
           ...values.additional_specs,
           property_type: values.additional_specs.property_type,
@@ -81,7 +85,7 @@ function SubscriptionAdd() {
 
       setLoadIndicator(true);
       try {
-        const response = await api.post("admin/subscription", payload, {
+        const response = await api.post("subscription", payload, {
           headers: {
             "Content-Type": "application/json",
           },
@@ -111,6 +115,7 @@ function SubscriptionAdd() {
         setLoadIndicator(false);
       }
     },
+
     validateOnChange: false,
     validateOnBlur: true,
   });
@@ -118,10 +123,16 @@ function SubscriptionAdd() {
   const fetchData = async () => {
     try {
       const [serviceData, offerData] = await Promise.all([
-        fetchAllServiceWithIds(),
+        fetchAllServiceGroupAndServiceWithIds(),
         fetchAllOfferWithIds(),
       ]);
-      setServiceData(serviceData);
+
+      const uniqueServiceData = serviceData.map((item) => ({
+        ...item,
+        uniqueId: `${item.id}-${item.type}`,
+      }));
+
+      setServiceData(uniqueServiceData);
       setOffers(offerData);
     } catch (error) {
       toast.error(error.message || "Failed to fetch data");
@@ -194,34 +205,41 @@ function SubscriptionAdd() {
           </div>
           <div className="container-fluid px-4">
             <div className="row py-4">
-              <div className="col-md-6 col-12 mb-4">
+              <div className="col-md-6 col-12 mb-3">
                 <label className="form-label">
                   Service Id<span className="text-danger">*</span>
                 </label>
-                <MultiSelect
-                  options={serviceOption}
-                  value={selectedServices}
-                  onChange={(selected) => {
-                    setSelectedServices(selected);
+                <select
+                  name="selected_id"
+                  value={formik.values.selected_id}
+                  onChange={(e) => {
+                    const selectedId = e.target.value;
+                    formik.setFieldValue("selected_id", selectedId);
+                    const selectedService = serviceData.find(
+                      (service) => service.uniqueId === selectedId
+                    );
                     formik.setFieldValue(
-                      "service_id",
-                      selected.map((option) => option.value)
+                      "type",
+                      selectedService ? selectedService.type : ""
                     );
                   }}
-                  labelledBy="Select Service"
-                  className={`form-multi-select ${
-                    formik.touched.service_id && formik.errors.service_id
+                  className={`form-select ${
+                    formik.touched.selected_id && formik.errors.selected_id
                       ? "is-invalid"
                       : ""
                   }`}
-                  style={{
-                    height: "37.6px !important",
-                    minHeight: "37.6px",
-                  }}
-                />
-                {formik.touched.service_id && formik.errors.service_id && (
+                >
+                  <option value="">Select Service</option>
+                  {serviceData &&
+                    serviceData.map((data) => (
+                      <option key={data.uniqueId} value={data.uniqueId}>
+                        {data.name} - {data.type}
+                      </option>
+                    ))}
+                </select>
+                {formik.touched.selected_id && formik.errors.selected_id && (
                   <div className="invalid-feedback">
-                    {formik.errors.service_id}
+                    {formik.errors.selected_id}
                   </div>
                 )}
               </div>

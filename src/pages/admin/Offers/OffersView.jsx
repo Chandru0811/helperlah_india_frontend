@@ -11,7 +11,7 @@ function OffersView() {
   const getData = async () => {
     try {
       setLoading(true);
-      const response = await api.get(`admin/offer/${id}`);
+      const response = await api.get(`offer/${id}`);
       setData(response.data.data);
     } catch (error) {
       toast.error("Error fetching data:", error);

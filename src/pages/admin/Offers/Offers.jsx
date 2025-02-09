@@ -94,7 +94,7 @@ function Offers() {
   const fetchData = async () => {
     try {
       setLoading(true);
-      const response = await api.get(`admin/offers`);
+      const response = await api.get(`offers`);
       setData(response.data.data);
     } catch (error) {
       console.error("Error fetching data:", error);
@@ -236,7 +236,7 @@ function Offers() {
               </MenuItem>
               <MenuItem>
                 <Delete
-                  path={`admin/offer/delete/${selectedId}`}
+                  path={`offer/delete/${selectedId}`}
                   onDeleteSuccess={fetchData}
                   onOpen={handleMenuClose}
                 />

@@ -104,7 +104,7 @@ function ServiceGroup() {
   const fetchData = async () => {
     try {
       setLoading(true);
-      const response = await api.get(`admin/serviceGroups`);
+      const response = await api.get(`serviceGroups`);
       setData(response.data.data);
     } catch (error) {
       console.error("Error fetching data:", error);
@@ -249,7 +249,7 @@ function ServiceGroup() {
               </MenuItem>
               <MenuItem>
                 <Delete
-                  path={`admin/serviceGroup/delete/${selectedId}`}
+                  path={`serviceGroup/delete/${selectedId}`}
                   onDeleteSuccess={fetchData}
                   onOpen={handleMenuClose}
                 />

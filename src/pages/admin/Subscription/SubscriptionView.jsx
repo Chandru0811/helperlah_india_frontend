@@ -21,7 +21,7 @@ function SubscriptionView() {
   const getData = async () => {
     try {
       setLoading(true);
-      const response = await api.get(`admin/subscription/${id}`);
+      const response = await api.get(`subscription/${id}`);
       setData(response.data.data);
     } catch (error) {
       toast.error("Error Fetching Data", error);
@@ -100,12 +100,7 @@ function SubscriptionView() {
                       <p className="fw-medium text-sm">Service Name</p>
                     </div>
                     <div className="col-6">
-                      <p className="text-muted text-sm">
-                        :{" "}
-                        {data.serviceNames
-                          ? JSON.parse(data.serviceNames).join(", ")
-                          : " --"}
-                      </p>
+                       <p className="text-muted text-sm">: {data.serviceNames.join(", ")}</p>
                     </div>
                   </div>
                 </div>

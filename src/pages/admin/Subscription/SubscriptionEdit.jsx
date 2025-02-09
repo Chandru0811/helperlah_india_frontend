@@ -1,13 +1,12 @@
-import { useFormik } from "formik";
 import { useState, useEffect } from "react";
+import { useFormik } from "formik";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import * as Yup from "yup";
-import { MultiSelect } from "react-multi-select-component";
 import api from "../../../config/URL";
 import toast from "react-hot-toast";
 import { FiAlertTriangle } from "react-icons/fi";
 import fetchAllOfferWithIds from "../../List/OfferList";
-import fetchAllServiceWithIds from "../../List/ServiceList";
+import fetchAllServiceGroupAndServiceWithIds from "../../List/ServiceGroupAndServiceList";
 
 function SubscriptionEdit() {
   const navigate = useNavigate();
@@ -16,16 +15,28 @@ function SubscriptionEdit() {
   const [loadIndicator, setLoadIndicator] = useState(false);
   const [offers, setOffers] = useState(null);
   const [serviceData, setServiceData] = useState([]);
-  const [selectedServices, setSelectedServices] = useState([]);
-  const serviceOption = serviceData?.map((service) => ({
-    label: service.name,
-    value: service.id,
-  }));
+
+  const [initialValues, setInitialValues] = useState({
+    selected_id: "",
+    type: "",
+    name: "",
+    slug: "",
+    description: "",
+    start_date: "",
+    end_date: "",
+    recurrence: "",
+    additional_specs: {
+      property_type: "",
+      property_size: "",
+      cleaning_hours: "",
+    },
+    range: "",
+    price: "",
+    offer_id: "",
+  });
 
   const validationSchema = Yup.object().shape({
-    service_id: Yup.array()
-      .min(1, "*At least one service must be selected")
-      .required("*Service Id is required"),
+    selected_id: Yup.string().required("*Service Id is required"),
     name: Yup.string().required("*Name is required"),
     start_date: Yup.string().required("*Start Date is required"),
     end_date: Yup.string().required("*End Date is required"),
@@ -40,43 +51,31 @@ function SubscriptionEdit() {
       .typeError("*Price must be a number")
       .required("*Price is required")
       .positive("*Please enter a valid number"),
-    description: Yup.string()
-      .notRequired()
-      .max(200, "*The maximum length is 200 characters"),
+    description: Yup.string().max(200, "*The maximum length is 200 characters"),
+    offer_id: Yup.string().notRequired(),
   });
 
   const formik = useFormik({
-    initialValues: {
-      service_id: [],
-      name: "",
-      slug: "",
-      description: "",
-      start_date: "",
-      end_date: "",
-      recurrence: "",
-      additional_specs: {
-        property_type: "",
-        property_size: "",
-        cleaning_hours: "",
-      },
-      range: "",
-      price: "",
-      offer_id: "",
-    },
-    validationSchema: validationSchema,
+    initialValues,
+    enableReinitialize: true,
+    validationSchema,
     onSubmit: async (values) => {
       setLoadIndicator(true);
+      const selectedService = serviceData.find(
+        (service) => service.uniqueId === values.selected_id
+      );
+      const type = selectedService ? selectedService.type : "";
+      const actualId = Number(values.selected_id.split("-")[0]);
+      const formattedSelectedId = type === "service" ? [actualId] : actualId;
 
       const payload = {
         ...values,
-        service_id: values.service_id.map(Number),
+        selected_id: formattedSelectedId,
+        type,
       };
 
       try {
-        const response = await api.put(
-          `admin/subscription/update/${id}`,
-          payload
-        );
+        const response = await api.put(`subscription/update/${id}`, payload);
         if (response.status === 200) {
           toast.success(response.data.message);
           navigate("/subscription");
@@ -96,7 +95,7 @@ function SubscriptionEdit() {
             });
           }
         } else {
-          toast.error("An error occurred while deleting the record.");
+          toast.error("An error occurred while updating the record.");
         }
       } finally {
         setLoadIndicator(false);
@@ -109,21 +108,48 @@ function SubscriptionEdit() {
   useEffect(() => {
     const getData = async () => {
       try {
-        const response = await api.get(`admin/subscription/${id}`);
+        const response = await api.get(`subscription/${id}`);
         const data = response.data.data;
 
+        let specs = {
+          property_type: "",
+          property_size: "",
+          cleaning_hours: "",
+        };
         if (data.additional_specs) {
-          data.additional_specs = JSON.parse(data.additional_specs);
+          specs = JSON.parse(data.additional_specs);
         }
 
-        const parsedServiceId = JSON.parse(data.service_id).map((id) => ({
-          label: serviceData.find((service) => service.id === id)?.name || "",
-          value: id,
-        }));
-        setSelectedServices(parsedServiceId);
-        formik.setValues({
-          ...data,
-          service_id: JSON.parse(data.service_id),
+        let selectedId = "";
+        if (data.service_group_id) {
+          selectedId = `${data.service_group_id}-servicesGroup`;
+        } else if (data.service_id) {
+          let serviceId = data.service_id;
+
+          if (
+            typeof serviceId === "string" &&
+            serviceId.startsWith("[") &&
+            serviceId.endsWith("]")
+          ) {
+            serviceId = serviceId.slice(1, -1);
+            serviceId = parseInt(serviceId, 10);
+          }
+
+          selectedId = `${serviceId}-service`;
+        }
+
+        setInitialValues({
+          selected_id: selectedId,
+          name: data.name || "",
+          slug: data.slug || "",
+          description: data.description || "",
+          start_date: data.start_date || "",
+          end_date: data.end_date || "",
+          recurrence: data.recurrence || "",
+          additional_specs: specs,
+          range: data.range || "",
+          price: data.price || "",
+          offer_id: data.offer_id ? data.offer_id.toString() : "",
         });
       } catch (error) {
         toast.error(`Error: ${error.response?.data?.message || error.message}`);
@@ -133,16 +159,19 @@ function SubscriptionEdit() {
     };
 
     getData();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [id, serviceData]);
+  }, [id]);
 
   const fetchData = async () => {
     try {
-      const [serviceData, offerData] = await Promise.all([
-        fetchAllServiceWithIds(),
+      const [serviceDataRes, offerData] = await Promise.all([
+        fetchAllServiceGroupAndServiceWithIds(),
         fetchAllOfferWithIds(),
       ]);
-      setServiceData(serviceData);
+      const uniqueServiceData = serviceDataRes.map((item) => ({
+        ...item,
+        uniqueId: `${item.id}-${item.type}`,
+      }));
+      setServiceData(uniqueServiceData);
       setOffers(offerData);
     } catch (error) {
       toast.error(error.message || "Failed to fetch data");
@@ -193,7 +222,7 @@ function SubscriptionEdit() {
             </div>
             <div className="my-2 pe-3 d-flex align-items-center">
               <Link to="/subscription">
-                <button type="button " className="btn btn-sm btn-border">
+                <button type="button" className="btn btn-sm btn-border">
                   Back
                 </button>
               </Link>
@@ -227,36 +256,42 @@ function SubscriptionEdit() {
             <>
               <div className="container-fluid px-4">
                 <div className="row py-4">
-                  <div className="col-md-6 col-12 mb-4">
-                    <label className="form-label">
-                      Service Id<span className="text-danger">*</span>
-                    </label>
-                    <MultiSelect
-                      options={serviceOption}
-                      value={selectedServices}
-                      onChange={(selected) => {
-                        setSelectedServices(selected);
+                  <div className="col-md-6 col-12 mb-3">
+                    <label className="form-label">Service Id</label>
+                    <select
+                      name="selected_id"
+                      value={formik.values.selected_id}
+                      onChange={(e) => {
+                        const selectedId = e.target.value;
+                        formik.setFieldValue("selected_id", selectedId);
+                        const selectedService = serviceData.find(
+                          (service) => service.uniqueId === selectedId
+                        );
                         formik.setFieldValue(
-                          "service_id",
-                          selected.map((option) => option.value)
+                          "type",
+                          selectedService ? selectedService.type : ""
                         );
                       }}
-                      labelledBy="Select Service"
-                      className={`form-multi-select ${
-                        formik.touched.service_id && formik.errors.service_id
+                      className={`form-select ${
+                        formik.touched.selected_id && formik.errors.selected_id
                           ? "is-invalid"
                           : ""
                       }`}
-                      style={{
-                        height: "37.6px !important",
-                        minHeight: "37.6px",
-                      }}
-                    />
-                    {formik.touched.service_id && formik.errors.service_id && (
-                      <div className="invalid-feedback">
-                        {formik.errors.service_id}
-                      </div>
-                    )}
+                    >
+                      <option value="">Select Service</option>
+                      {serviceData &&
+                        serviceData.map((data) => (
+                          <option key={data.uniqueId} value={data.uniqueId}>
+                            {data.name} - {data.type}
+                          </option>
+                        ))}
+                    </select>
+                    {formik.touched.selected_id &&
+                      formik.errors.selected_id && (
+                        <div className="invalid-feedback">
+                          {formik.errors.selected_id}
+                        </div>
+                      )}
                   </div>
                   <div className="col-md-6 col-12 mb-3">
                     <label className="form-label">
@@ -368,7 +403,6 @@ function SubscriptionEdit() {
                         </div>
                       )}
                   </div>
-
                   <div className="col-md-6 col-12 mb-3">
                     <label className="form-label">
                       Property Size<span className="text-danger">*</span>
@@ -427,7 +461,6 @@ function SubscriptionEdit() {
                         </div>
                       )}
                   </div>
-
                   <div className="col-md-6 col-12 mb-3">
                     <label className="form-label">
                       Range<span className="text-danger">*</span>
@@ -452,7 +485,6 @@ function SubscriptionEdit() {
                       </div>
                     )}
                   </div>
-
                   <div className="col-md-6 col-12 mb-3">
                     <label className="form-label">Offers</label>
                     <select

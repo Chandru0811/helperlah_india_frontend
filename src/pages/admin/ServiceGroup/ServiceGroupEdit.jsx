@@ -82,7 +82,7 @@ function ServiceGroupEdit() {
       formData.append("base_price", values.base_price);
       try {
         const response = await api.post(
-          `admin/serviceGroup/update/${id}`,
+          `serviceGroup/update/${id}`,
           formData,
           {
             headers: {
@@ -148,7 +148,7 @@ function ServiceGroupEdit() {
     const getData = async () => {
       try {
         setLoading(true);
-        const response = await api.get(`admin/serviceGroup/${id}`);
+        const response = await api.get(`serviceGroup/${id}`);
         formik.setValues(response.data.data);
         setPreviewImage(`${ImageURL}${response.data.data.image}`);
       } catch (error) {

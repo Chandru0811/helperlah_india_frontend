@@ -4,6 +4,7 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import * as Yup from "yup";
 import api from "../../../config/URL";
 import toast from "react-hot-toast";
+import { FiAlertTriangle } from "react-icons/fi";
 
 function OffersAdd() {
   const { id } = useParams();
@@ -39,7 +40,7 @@ function OffersAdd() {
     onSubmit: async (values) => {
       setLoadIndicator(true);
       try {
-        const response = await api.put(`admin/offer/update/${id}`, values);
+        const response = await api.put(`offer/update/${id}`, values);
         if (response.status === 200) {
           toast.success(response.data.message);
           navigate("/offers");
@@ -72,7 +73,7 @@ function OffersAdd() {
   const getData = async () => {
     try {
       setLoading(true);
-      const response = await api.get(`admin/offer/${id}`);
+      const response = await api.get(`offer/${id}`);
       formik.setValues(response.data.data);
     } catch (error) {
       toast.error("Error fetching data:", error);
@@ -118,11 +119,11 @@ function OffersAdd() {
       >
         <div className="card">
           <div className="d-flex justify-content-between align-items-center card_header p-1 mb-4 px-4">
-            <div class="d-flex align-items-center">
-              <div class="d-flex">
-                <div class="dot active"></div>
+            <div className="d-flex align-items-center">
+              <div className="d-flex">
+                <div className="dot active"></div>
               </div>
-              <span class="me-2 text-muted">Edit Offers</span>
+              <span className="me-2 text-muted">Edit Offers</span>
             </div>
             <div className="my-2 pe-3 d-flex align-items-center">
               <Link to="/offers">

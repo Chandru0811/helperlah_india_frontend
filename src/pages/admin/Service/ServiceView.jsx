@@ -15,7 +15,7 @@ function ServiceView() {
   const getData = async () => {
     try {
       setLoading(true);
-      const response = await api.get(`admin/service/${id}`);
+      const response = await api.get(`service/${id}`);
       setData(response.data.data);
     } catch (error) {
       toast.error("Error Fetching Data", error);

@@ -1,9 +1,9 @@
 import toast from "react-hot-toast";
 import api from "../../config/URL";
 
-const fetchAllOfferWithIds = async () => {
+const fetchAllServiceGroupAndServiceWithIds = async () => {
   try {
-    const response = await api.get("offers/list");
+    const response = await api.get("serviceGroupAndService/list");
     return response.data.data;
   } catch (error) {
     toast.error("Error fetching center data:", error);
@@ -11,4 +11,4 @@ const fetchAllOfferWithIds = async () => {
   }
 };
 
-export default fetchAllOfferWithIds;
+export default fetchAllServiceGroupAndServiceWithIds;

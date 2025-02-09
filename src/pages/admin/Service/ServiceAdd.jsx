@@ -78,7 +78,7 @@ function ServiceAdd() {
       formData.append("order", values.order);
       formData.append("price", values.price);
       try {
-        const response = await api.post("admin/service", formData, {
+        const response = await api.post("service", formData, {
           headers: {
             "Content-Type": "multipart/form-data",
           },
