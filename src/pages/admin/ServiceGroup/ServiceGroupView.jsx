@@ -32,7 +32,7 @@ function ServiceGroupView() {
   const handelStatusChange = async () => {
     try {
       setLoadIndicator(true);
-      const response = await api.post(`admin/serviceGroup/status/${id}`);
+      const response = await api.post(`serviceGroup/status/${id}`);
       toast.success(response?.data?.message);
       getData();
     } catch (error) {
@@ -109,7 +109,7 @@ function ServiceGroupView() {
               </button>
             ) : (
               <Deactivate
-                path={`admin/serviceGroup/status/${id}`}
+                path={`serviceGroup/status/${id}`}
                 handelSuccess={getData}
               />
             )}

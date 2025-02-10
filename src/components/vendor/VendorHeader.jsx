@@ -65,7 +65,8 @@ function VendorHeader({ handleLogout }) {
                       fontWeight: "500",
                     }}
                   >
-                    {user_name.split(" ")[0]}
+                    {/* {user_name.split(" ")[0]} */}
+                    {user_name}
                   </span>
                   <IoIosArrowDown
                     style={{ fontSize: "16px" }}
