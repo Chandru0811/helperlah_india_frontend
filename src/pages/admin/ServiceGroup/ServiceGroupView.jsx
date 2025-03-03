@@ -15,7 +15,7 @@ function ServiceGroupView() {
   const getData = async () => {
     try {
       setLoading(true);
-      const response = await api.get(`serviceGroup/${id}`);
+      const response = await api.get(`admin/serviceGroup/${id}`);
       setData(response.data.data);
     } catch (error) {
       toast.error("Error Fetching Data", error);

@@ -40,7 +40,7 @@ function OffersAdd() {
     onSubmit: async (values) => {
       setLoadIndicator(true);
       try {
-        const response = await api.put(`offer/update/${id}`, values);
+        const response = await api.put(`admin/offer/update/${id}`, values);
         if (response.status === 200) {
           toast.success(response.data.message);
           navigate("/offers");
@@ -73,7 +73,7 @@ function OffersAdd() {
   const getData = async () => {
     try {
       setLoading(true);
-      const response = await api.get(`offer/${id}`);
+      const response = await api.get(`admin/offer/${id}`);
       formik.setValues(response.data.data);
     } catch (error) {
       toast.error("Error fetching data:", error);

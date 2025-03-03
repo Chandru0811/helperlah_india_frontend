@@ -75,7 +75,7 @@ function SubscriptionEdit() {
       };
 
       try {
-        const response = await api.put(`subscription/update/${id}`, payload);
+        const response = await api.put(`admin/subscription/update/${id}`, payload);
         if (response.status === 200) {
           toast.success(response.data.message);
           navigate("/subscription");
@@ -108,7 +108,7 @@ function SubscriptionEdit() {
   useEffect(() => {
     const getData = async () => {
       try {
-        const response = await api.get(`subscription/${id}`);
+        const response = await api.get(`admin/subscription/${id}`);
         const data = response.data.data;
 
         let specs = {
@@ -116,8 +116,10 @@ function SubscriptionEdit() {
           property_size: "",
           cleaning_hours: "",
         };
-        if (data.additional_specs) {
+        if (data.additional_specs && typeof data.additional_specs === "string") {
           specs = JSON.parse(data.additional_specs);
+        } else {
+          specs = data.additional_specs || {}; 
         }
 
         let selectedId = "";

@@ -2,19 +2,17 @@ import { useState } from "react";
 import { NavLink } from "react-router-dom";
 import helperlogo from "../../assets/helperlah_logo_side.png";
 import { BsBarChart } from "react-icons/bs";
-import { BiSolidPackage } from "react-icons/bi";
+// import { BiSolidPackage } from "react-icons/bi";
 import PropTypes from "prop-types";
 import {
-  MdOutlineAssignmentInd,
-  MdOutlineCleaningServices,
   MdOutlineHomeRepairService,
   MdOutlineMiscellaneousServices,
   MdOutlineSubscriptions,
 } from "react-icons/md";
 import { TbRosetteDiscount } from "react-icons/tb";
-import { FaRegUserCircle } from "react-icons/fa";
-import { PiContactlessPayment } from "react-icons/pi";
-import { RiSecurePaymentFill } from "react-icons/ri";
+// import { FaRegUserCircle } from "react-icons/fa";
+// import { PiContactlessPayment } from "react-icons/pi";
+// import { RiSecurePaymentFill } from "react-icons/ri";
 import { IoBagCheckOutline } from "react-icons/io5";
 
 function AdminSideBar() {
@@ -112,7 +110,7 @@ function AdminSideBar() {
                 Subscription
               </NavLink>
             </li>
-            <li className="nav-item px-3">
+            {/* <li className="nav-item px-3">
               <NavLink
                 className="nav-link"
                 style={{ borderRadius: "5px" }}
@@ -151,7 +149,7 @@ function AdminSideBar() {
                 <FaRegUserCircle className="sidebar_icon" />
                 User
               </NavLink>
-            </li>
+            </li> */}
             <li className="nav-item px-3">
               <NavLink
                 className="nav-link"
@@ -162,7 +160,7 @@ function AdminSideBar() {
                 Orders
               </NavLink>
             </li>
-            <li className="nav-item px-3">
+            {/* <li className="nav-item px-3">
               <NavLink
                 className="nav-link"
                 style={{ borderRadius: "5px" }}
@@ -191,7 +189,7 @@ function AdminSideBar() {
                 <RiSecurePaymentFill className="sidebar_icon" />
                 Payment Type
               </NavLink>
-            </li>
+            </li> */}
           </ul>
           {/* <div className="ps-4 mt-auto w-100 mb-4">
             <div className="navbar-nav">

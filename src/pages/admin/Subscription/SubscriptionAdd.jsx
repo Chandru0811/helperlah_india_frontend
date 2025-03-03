@@ -85,7 +85,7 @@ function SubscriptionAdd() {
 
       setLoadIndicator(true);
       try {
-        const response = await api.post("subscription", payload, {
+        const response = await api.post("admin/subscription", payload, {
           headers: {
             "Content-Type": "application/json",
           },

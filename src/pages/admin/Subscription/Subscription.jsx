@@ -100,7 +100,7 @@ function Subscription() {
   const fetchData = async () => {
     try {
       setLoading(true);
-      const response = await api.get(`subscriptions`);
+      const response = await api.get(`admin/subscriptions`);
       setData(response.data.data);
     } catch (error) {
       console.error("Error fetching data:", error);
@@ -245,7 +245,7 @@ function Subscription() {
               </MenuItem>
               <MenuItem>
                 <Delete
-                  path={`subscription/delete/${selectedId}`}
+                  path={`admin/subscription/delete/${selectedId}`}
                   onDeleteSuccess={fetchData}
                   onOpen={handleMenuClose}
                 />

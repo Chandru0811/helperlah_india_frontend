@@ -87,7 +87,7 @@ function ServiceEdit() {
       formData.append("price", values.price);
       try {
         const response = await api.post(
-          `service/update/${id}`,
+          `admin/service/update/${id}`,
           formData,
           {
             headers: {
@@ -153,7 +153,7 @@ function ServiceEdit() {
     const getData = async () => {
       try {
         setLoading(true);
-        const response = await api.get(`service/${id}`);
+        const response = await api.get(`admin/service/${id}`);
         formik.setValues(response.data.data);
         setPreviewImage(`${ImageURL}${response.data.data.image}`);
       } catch (error) {

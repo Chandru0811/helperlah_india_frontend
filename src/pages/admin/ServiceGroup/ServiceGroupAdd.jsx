@@ -69,7 +69,7 @@ function ServiceGroupAdd() {
       formData.append("order", values.order);
       formData.append("base_price", values.base_price);
       try {
-        const response = await api.post("serviceGroup", formData, {
+        const response = await api.post("admin/serviceGroup", formData, {
           headers: {
             "Content-Type": "multipart/form-data",
           },

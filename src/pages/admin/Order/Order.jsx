@@ -46,25 +46,20 @@ function Order() {
       },
       { accessorKey: "order_number", enableHiding: false, header: "Order Number" },
       {
-        accessorKey: "customer.name",
+        accessorFn: (row) => row.order_details?.[0]?.service_name || "N/A",
         enableHiding: false,
-        header: "Customer Name",
+        header: "Service",
       },
       {
-        accessorKey: "total_amount",
-        enableHiding: false,
-        header: "Total Amount",
-      },
-      {
-        accessorKey: "paid_amount",
+        accessorKey: "price",
         header: "Paid Amount",
         enableHiding: false,
         size: 40,
       },
       {
-        accessorKey: "balance_amount",
+        accessorFn: (row) => row.order_details?.[0]?.booking_type || "",
         enableHiding: false,
-        header: "Balance Amount",
+        header: "Booking Type",
       },
       {
         accessorKey: "booking_type",

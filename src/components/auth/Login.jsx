@@ -67,7 +67,7 @@ function Login({ loginAsVendor, loginAsAdmin }) {
             response.data.data.userDetails.mobile
           );
 
-          if (response.data.data.userDetails.role === "1") {
+          if (response.data.data.userDetails.role === "1" || response.data.data.userDetails.role === 1) {
             loginAsAdmin();
           } else if (response.data.data.userDetails.role === "3") {
             navigate("/");

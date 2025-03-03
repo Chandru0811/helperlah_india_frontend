@@ -3,7 +3,7 @@ import api from "../../config/URL";
 
 const fetchAllServiceGroupAndServiceWithIds = async () => {
   try {
-    const response = await api.get("serviceGroupAndService/list");
+    const response = await api.get("admin/serviceGroupAndService/list");
     return response.data.data;
   } catch (error) {
     toast.error("Error fetching center data:", error);

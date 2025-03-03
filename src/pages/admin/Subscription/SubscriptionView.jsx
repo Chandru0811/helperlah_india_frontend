@@ -21,7 +21,7 @@ function SubscriptionView() {
   const getData = async () => {
     try {
       setLoading(true);
-      const response = await api.get(`subscription/${id}`);
+      const response = await api.get(`admin/subscription/${id}`);
       setData(response.data.data);
     } catch (error) {
       toast.error("Error Fetching Data", error);
@@ -35,9 +35,7 @@ function SubscriptionView() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
 
-  const additionalSpecs = data.additional_specs
-    ? JSON.parse(data.additional_specs)
-    : {};
+  const additionalSpecs = data.additional_specs || {};
 
   return (
     <div className="container-fluid px-0">
@@ -151,7 +149,7 @@ function SubscriptionView() {
                     </div>
                     <div className="col-6">
                       <p className="text-muted text-sm text-break ">
-                        : {additionalSpecs.property_type || "N/A"}
+                         : {additionalSpecs.property_type || "N/A"}
                       </p>
                     </div>
                   </div>
@@ -163,7 +161,7 @@ function SubscriptionView() {
                     </div>
                     <div className="col-6">
                       <p className="text-muted text-sm text-break ">
-                        : {additionalSpecs.property_size || "N/A"}
+                         : {additionalSpecs.property_size || "N/A"}
                       </p>
                     </div>
                   </div>
@@ -175,7 +173,7 @@ function SubscriptionView() {
                     </div>
                     <div className="col-6">
                       <p className="text-muted text-sm text-break ">
-                        : {additionalSpecs.cleaning_hours || "N/A"}
+                        :  {additionalSpecs.cleaning_hours || "N/A"}
                       </p>
                     </div>
                   </div>
