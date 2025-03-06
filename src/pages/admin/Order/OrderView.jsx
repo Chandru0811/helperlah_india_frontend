@@ -203,13 +203,13 @@ function OrderView() {
                             {data?.order.order_details?.[0]?.service_name ||
                               " --"}
                           </h3>
-                          <p>
-                            {data?.order?.order_details?.[0]?.specifications
-                              ? formatSpecifications(
-                                  data.order.order_details[0].specifications
-                                )
-                              : " --"}
-                          </p>
+                          {data?.order?.order_details?.[0]?.specifications && (
+                            <p>
+                              {formatSpecifications(
+                                data.order.order_details[0].specifications
+                              )}
+                            </p>
+                          )}
                           <p>
                             Duration :{" "}
                             {data?.order?.order_details?.[0]?.duration || " --"}
@@ -264,7 +264,7 @@ function OrderView() {
                       <div className="d-flex justify-content-between">
                         <span>Discount</span>
                         <span>
-                          ₹ 
+                          ₹
                           {new Intl.NumberFormat("en-IN", {
                             maximumFractionDigits: 0,
                           }).format(parseFloat(data?.order?.discount || " 0"))}
@@ -319,12 +319,11 @@ function OrderView() {
                             );
                             return (
                               <p>
-                                 {deliveryAddress.name}<br></br>
-                                 {deliveryAddress.email}<br></br>{" "}
-                                {deliveryAddress.phone}, {deliveryAddress.city},{" "}
-                                {deliveryAddress.state},{" "}
-                                {deliveryAddress.country},{" "}
-                                {deliveryAddress.state},{" "}
+                                {deliveryAddress.name}
+                                <br></br>
+                                {deliveryAddress.email}
+                                <br></br> {deliveryAddress.phone},
+                                {deliveryAddress.address}-{" "}
                                 {deliveryAddress.postalcode}{" "}
                               </p>
                             );
